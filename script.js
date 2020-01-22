@@ -8,7 +8,7 @@ let pisoA=[];
 let enemigosA=[];
 
 const images={
-    background:"./Images/background.png",
+    background:"./Images/background.jpg",
     piso0:"./Images/piso0.png",
     piso1:"./Images/piso1.png",
     piso2:"./Images/piso2.png",
@@ -21,7 +21,7 @@ const images={
     enemigo5:"./Images/Enemigo5.png",
     enemigo6:"./Images/Enemigo6.png",
     enemigo7:"./Images/Enemigo7.png",
-    personaje:"./Images/personaje.png"
+    personaje:"./Images/personaje2.png"
 };
 
 class background{
@@ -245,8 +245,14 @@ class enemigos{
 
 class Personaje{
     constructor(){
+        this.gravedad=0.98;
+        this.limitev=0.98;
+        this.velocidadSalto=26;
+        this.vy=0;
+        this.vx=0;
+        this.enPiso=false;
         this.x=300;
-        this.y=500;
+        this.y=200;
         this.width=50;
         this.height=50;
         this.img=new Image();
@@ -256,14 +262,90 @@ class Personaje{
         }
     }
     draw(){
+        this.y++
         ctx.drawImage(this.img,this.x,this.y,this.width,this.height);
     }
+    isTouchingEnemigo(enemigos){
+        return(
+            this.x<enemigos.x+enemigos.width && 
+            this.x + this.width >enemigos.x &&
+            this.y < enemigos.y + enemigos.height &&
+            this.y + this.height > enemigos.y
+        )    
+        
+    }
+    isTouchingPiso(piso){
+        let valid=(this.x+this.width>piso.x && this.x+this.width<piso.x+piso.width ||
+        this.x>piso.x && this.x<piso.x+piso.width)&&
+        (this.y+this.height>piso.y && this.y+this.height<piso.y+piso.height||
+        this.y>piso.y && this.y<piso.y+piso.height)
+        if(valid){
+                this.enPiso=true;
+                this.vy=0;
+        }
+        return valid
+    }
+    
+    aplicarGravedad(){
+        if(!this.enPiso){
+            this.vy+=this.gravedad;
+            if(this.vy>this.limitev){
+                this.vy=this.limitev;
+            }
+        }
+        
+    }
+    saltar() {
+        if(this.enPiso){
+            this.vy-=this.velocidadSalto;
+            
+        }
+        this.enPiso=false    
+    }
+    mover(){
+        this.x+=this.vx;
+    }
+
+
 }
+
+
 
 const fondo=new background();
 const board=new piso(0);
 const per=new Personaje();
 
+
+function checkCollitionsEnemi(){
+    enemigosA.forEach((enemigos,i)=>{
+        if(enemigos.x+enemigos.width<=0){
+            enemigosA.splice(i,1);
+        }
+        per.isTouchingEnemigo(enemigos) ? gameOver() : null;
+    })
+}
+
+function checkCollitionsPiso(){
+    if(per.y>=canvas.height)return gameOver();
+    if(per.isTouchingPiso(board)){
+        per.y=board.y-50;
+    }
+    pisoA.forEach((piso,i)=>{
+        if(pisoA.x+piso.width<=0){
+            pisoA.splice(i,1)
+        }
+        if(per.isTouchingPiso(piso)){
+            per.y=piso.y-50;
+        }
+        
+    })
+    
+}
+
+function gameOver(){
+
+    clearInterval(interval);
+}
 function generarPiso(){
     if(frames %380===0){
         const pos=Math.floor(Math.random()*(300))+250;
@@ -298,6 +380,12 @@ function update(){
     generarEnemigo();
     drawEnemigo();
     per.draw();
+    per.y+=per.vy;
+    per.aplicarGravedad();
+    per.mover();
+    checkCollitionsEnemi();
+    checkCollitionsPiso();
+    //per.aplicarGravedad();
 }
 
 function startGame() {
@@ -305,3 +393,16 @@ function startGame() {
   }
 
   startGame();
+  document.addEventListener('keydown', ({ keyCode }) => {
+    switch (keyCode) {
+      case 38:
+        per.saltar();
+        break;
+      case 39:
+        per.vx=per.limitev;
+        break;
+      case 37:
+        per.vx=-per.limitev;
+        break;
+    }
+  })
