@@ -1,11 +1,13 @@
 const canvas=document.querySelector('canvas');
 const ctx=canvas.getContext('2d');
+//const boton1=document.getElementById("boton1")
 let interval;
 let frames=0;
 let gameover=false;
 let puntuacion=0;
 let pisoA=[];
 let enemigosA=[];
+let rMenu=false;
 
 const images={
     background0:"Images/background.png",
@@ -427,6 +429,13 @@ function gameOver(){
         ctx.font="bold 20px Courier New"; 
         ctx.strokeText(texto,200,350);
         ctx.fillText(texto,200,350);
+        texto="Presiona P para regresar al menu";
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,400);
+        ctx.fillText(texto,200,400);
+        rMenu=true;
     } 
     
 
@@ -477,18 +486,18 @@ function drawScore(){
   }
 
   function restarGame(){
-      console.log(gameover);
+      
       if(gameover){
-        frames=0;
-        gameover=false;
-        score=0;
-        puntuacion=0;
-        per.lives--;
-        pisoA=[];
-        enemigosA=[];
-        per.restar();
-        board.restar();
-        startGame();
+            frames=0;
+            gameover=false;
+            score=0;
+            puntuacion=0;
+            per.lives--;
+            pisoA=[];
+            enemigosA=[];
+            per.restar();
+            board.restar();
+            startGame();
       }
   }
 
@@ -519,9 +528,49 @@ function startGame() {
     interval = setInterval(update, 1000 / 220);
     
   }
+  window.onload=function(){
+      document.getElementById("boton1").onclick=function(){
+          startGame();
+          let menuI= document.getElementById("Menu");
+          menuI.style.display="none"
+      }
+  }
   
   //startGame();
-  
+ function regresarBoton(){
+     rMenu=false;
+     ctx.clearRect(0,0,canvas.width,canvas.height);
+     let aleatorio=Math.floor(Math.random()*4)
+        switch(aleatorio){
+        	case 0:
+        		fondo.img.src=images.background0;
+        		break;
+        	case 1:
+        		fondo.img.src=images.background1;
+        		break;
+        	case 2:
+        		fondo.img.src=images.background2;
+        		break;
+        	case 3:
+        		fondo.img.src=images.background3;
+        		break;
+
+    }
+     fondo.draw();
+     frames=0;
+     gameover=false;
+     puntuacion=0;
+     pisoA=[];
+     enemigosA=[];
+     rMenu=false;
+     per.lives=3;
+     per.puntuacion=0;
+     board.restar();
+     per.restar();
+     let menuI= document.getElementById("Menu");
+     menuI.style.display="flex";
+   }
+
   document.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
       case 38:
@@ -536,5 +585,8 @@ function startGame() {
       case 82:
         restarGame();
         break;
+      case 80:
+        if(rMenu)
+        regresarBoton();  
     }
   })
