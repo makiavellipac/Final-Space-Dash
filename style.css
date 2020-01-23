@@ -1,3 +1,9 @@
 canvas{
+    position:absolute;
     border: 1px solid black;
+}
+div{
+    
+    position: relative;
+    color: aqua;
 }

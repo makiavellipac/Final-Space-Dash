@@ -3,26 +3,39 @@ const ctx=canvas.getContext('2d');
 let interval;
 let frames=0;
 let gameover=false;
-let score=0;
+let puntuacion=0;
 let pisoA=[];
 let enemigosA=[];
 
 const images={
-    background:"./Images/background.jpg",
-    piso0:"./Images/piso0.png",
-    piso1:"./Images/piso1.png",
-    piso2:"./Images/piso2.png",
-    piso3:"./Images/piso3.png",
-    piso4:"./Images/piso4.png",
-    enemigo1:"./Images/Enemigo1.png",
-    enemigo2:"./Images/Enemigo2.png",
-    enemigo3:"./Images/Enemigo3.png",
-    enemigo4:"./Images/Enemigo4.png",
-    enemigo5:"./Images/Enemigo5.png",
-    enemigo6:"./Images/Enemigo6.png",
-    enemigo7:"./Images/Enemigo7.png",
-    personaje:"./Images/personaje2.png"
+    background0:"Images/background.png",
+    background1:"Images/background.jpg",
+    background2:"Images/background1.jpg",
+    background3:"Images/background2.png",
+    piso0:"Images/piso5.png",
+    piso1:"Images/piso5.png",
+    piso2:"Images/piso6.png",
+    piso3:"Images/piso7.png",
+    piso4:"Images/piso8.png",
+    enemigo1:"Images/Enemigo1.png",
+    enemigo2:"Images/Enemigo2.png",
+    enemigo3:"Images/Enemigo3.png",
+    enemigo4:"Images/Enemigo4.png",
+    enemigo5:"Images/Enemigo5.png",
+    enemigo6:"Images/Enemigo6.png",
+    enemigo7:"Images/Enemigo7.png",
+    personaje:"Images/personaje2.png"
+   
+}
+
+const sonidos={
+    boton:"Sonidos/boton.mp3",
+    menu:"Sonidos/menu.ogg",
+    juego:"Sonidos/shooting-stars.mp3",
+    start:"Sonidos/Start.mp3",
+    gameover:"Sonidos/game-over.wav"
 };
+
 
 class background{
     constructor(){
@@ -31,13 +44,34 @@ class background{
         this.width=canvas.width;
         this.height=canvas.height;
         this.img=new Image();
-        this.img.src=images.background;
+        this.img.src;
         this.img.onload=()=>{
             this.draw();
         }
+        let aleatorio=Math.floor(Math.random()*4)
+        switch(aleatorio){
+        	case 0:
+        		this.img.src=images.background0;
+        		break;
+        	case 1:
+        		this.img.src=images.background1;
+        		break;
+        	case 2:
+        		this.img.src=images.background2;
+        		break;
+        	case 3:
+        		this.img.src=images.background3;
+        		break;
+
+        }
+        this.audio=new Audio();
+        this.audio.src=sonidos.juego;
+        this.audio.loop=true;
+
     }
     draw(){
         this.x--;
+        
         if(this.x< -canvas.width)this.x=0
         ctx.drawImage(this.img,this.x,this.y,this.width,this.height);
         ctx.drawImage(
@@ -122,6 +156,10 @@ class piso{
                         this.width,
                         this.height);
         }
+    restar(){
+        this.x=0;
+        this.y=550;
+    }
     }
 
 class enemigos{
@@ -257,6 +295,8 @@ class Personaje{
         this.height=50;
         this.img=new Image();
         this.img.src=images.personaje;
+        this.lives=3;
+        this.puntuacion=0;
         this.onload=()=>{
             this.draw();
         }
@@ -305,7 +345,15 @@ class Personaje{
     mover(){
         this.x+=this.vx;
     }
-
+    restar(){
+        this.vy=0;
+        this.vx=0;
+        this.enPiso=false;
+        this.x=300;
+        this.y=200;
+        
+        
+    }
 
 }
 
@@ -345,6 +393,43 @@ function checkCollitionsPiso(){
 function gameOver(){
 
     clearInterval(interval);
+    fondo.audio.pause();
+    let audioOver=new Audio();
+    audioOver.src=sonidos.gameover;
+    audioOver.loop=false;
+    audioOver.play();
+    per.puntuacion+=puntuacion;
+    if(per.lives>1){
+        let texto="PERDISTE 1 VIDA";
+        ctx.strokeStyle="#FFCFDA";
+        ctx.fillStyle="#FF4C77"; 
+        ctx.font="bold 30px Courier New"; 
+        ctx.strokeText(texto,200,300);
+        ctx.fillText(texto,200,300);
+        texto="Preciona R para continuar";
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,350);
+        ctx.fillText(texto,200,350);
+        gameover=true;
+    }
+    else{
+        let texto="Fin del Juego";
+        ctx.strokeStyle="#FFCFDA";
+        ctx.fillStyle="#FF4C77"; 
+        ctx.font="bold 30px Courier New"; 
+        ctx.strokeText(texto,200,300);
+        ctx.fillText(texto,200,300);
+        texto="Tu Puntuación final fue: "+per.puntuacion;
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,350);
+        ctx.fillText(texto,200,350);
+    } 
+    
+
 }
 function generarPiso(){
     if(frames %380===0){
@@ -370,6 +455,43 @@ function drawEnemigo(){
     enemigosA.forEach(enemigos=>enemigos.draw())
 }
 
+function drawScore(){
+    if(frames%100===0){
+        puntuacion+=20;
+    }
+    let texto="Puntuación:" + puntuacion
+    ctx.strokeStyle="#FFCFDA";
+    ctx.fillStyle="#FF4C77"; 
+    ctx.font="bold 30px Courier New"; 
+    ctx.strokeText(texto,0,30);
+    ctx.fillText(texto,0,30) 
+  }
+  function drawLives(lives){
+    let live=new Image();
+    live.src=images.personaje;
+    let margin=950;
+    for(let i=0;i<lives;i++){
+        ctx.drawImage(live,margin,10,30,30);
+        margin-=70;
+    }    
+  }
+
+  function restarGame(){
+      console.log(gameover);
+      if(gameover){
+        frames=0;
+        gameover=false;
+        score=0;
+        puntuacion=0;
+        per.lives--;
+        pisoA=[];
+        enemigosA=[];
+        per.restar();
+        board.restar();
+        startGame();
+      }
+  }
+
 function update(){
     frames++;
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -380,19 +502,26 @@ function update(){
     generarEnemigo();
     drawEnemigo();
     per.draw();
+    drawScore();
+    drawLives(per.lives);
     per.y+=per.vy;
     per.aplicarGravedad();
     per.mover();
     checkCollitionsEnemi();
     checkCollitionsPiso();
-    //per.aplicarGravedad();
+    
+    
 }
 
-function startGame() {
-    interval = setInterval(update, 1000 / 220);
-  }
 
-  startGame();
+function startGame() {
+    fondo.audio.play();
+    interval = setInterval(update, 1000 / 220);
+    
+  }
+  
+  //startGame();
+  
   document.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
       case 38:
@@ -403,6 +532,9 @@ function startGame() {
         break;
       case 37:
         per.vx=-per.limitev;
+        break;
+      case 82:
+        restarGame();
         break;
     }
   })
