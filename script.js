@@ -7,7 +7,13 @@ let gameover=false;
 let puntuacion=0;
 let pisoA=[];
 let enemigosA=[];
+let Twoplayer=false;
 let rMenu=false;
+let puntP1=0;
+let puntP2=0;
+let srcJugador2;
+let srcJugador1;
+
 
 const images={
     background0:"Images/background.png",
@@ -26,7 +32,10 @@ const images={
     enemigo5:"Images/Enemigo5.png",
     enemigo6:"Images/Enemigo6.png",
     enemigo7:"Images/Enemigo7.png",
-    personaje:"Images/personaje2.png"
+    personaje:"Images/personaje1.png",
+    personaje1:"Images/personaje2.png",
+    personaje2:"Images/personaje3.png",
+    personaje3:"Images/personaje.png"
    
 }
 
@@ -296,12 +305,34 @@ class Personaje{
         this.width=50;
         this.height=50;
         this.img=new Image();
-        this.img.src=images.personaje;
+        this.img.src;
+        this.id;
         this.lives=3;
         this.puntuacion=0;
         this.onload=()=>{
             this.draw();
         }
+        let aleatorio=Math.floor(Math.random()*4)
+        switch(aleatorio){
+        	case 0:
+                this.img.src=images.personaje;
+                this.id=1;
+        		break;
+        	case 1:
+                this.img.src=images.personaje1;
+                this.id=2;
+        		break;
+        	case 2:
+                this.img.src=images.personaje2;
+                this.id=3;
+        		break;
+        	case 3:
+                this.img.src=images.personaje3;
+                this.id=4;
+        		break;
+
+        }
+
     }
     draw(){
         this.y++
@@ -400,7 +431,9 @@ function gameOver(){
     audioOver.src=sonidos.gameover;
     audioOver.loop=false;
     audioOver.play();
-    per.puntuacion+=puntuacion;
+    
+    if(!Twoplayer){
+        per.puntuacion+=puntuacion;
     if(per.lives>1){
         let texto="PERDISTE 1 VIDA";
         ctx.strokeStyle="#FFCFDA";
@@ -437,6 +470,82 @@ function gameOver(){
         ctx.fillText(texto,200,400);
         rMenu=true;
     } 
+}
+else{
+    if(per.lives>1 && per.lives%2==0){
+        puntP1+=puntuacion;
+        let texto="PERDISTE 1 VIDA JUGADOR 1";
+        ctx.strokeStyle="#FFCFDA";
+        ctx.fillStyle="#FF4C77"; 
+        ctx.font="bold 30px Courier New"; 
+        ctx.strokeText(texto,200,300);
+        ctx.fillText(texto,200,300);
+        texto="Presiona R para continuar Jugador 2";
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,350);
+        ctx.fillText(texto,200,350);
+        gameover=true;
+    }else if(per.lives>1 && per.lives%2!=0){
+        puntP2+=puntuacion;
+        let texto="PERDISTE 1 VIDA JUGADOR 2";
+        ctx.strokeStyle="#FFCFDA";
+        ctx.fillStyle="#FF4C77"; 
+        ctx.font="bold 30px Courier New"; 
+        ctx.strokeText(texto,200,300);
+        ctx.fillText(texto,200,300);
+        texto="Presiona R para continuar Jugador1";
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,350);
+        ctx.fillText(texto,200,350);
+        gameover=true;
+    }else{
+        let texto="Fin del Juego";
+        ctx.strokeStyle="#FFCFDA";
+        ctx.fillStyle="#FF4C77"; 
+        ctx.font="bold 30px Courier New"; 
+        ctx.strokeText(texto,200,300);
+        ctx.fillText(texto,200,300);
+        texto="Tu Puntuación final Jugador 1 fue: "+puntP1;
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,350);
+        ctx.fillText(texto,200,350);
+        texto="Tu Puntuación final jugador 2 fue: "+puntP2;
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,400);
+        ctx.fillText(texto,200,400);
+        if(puntP1>puntP2){
+            texto="GANASTE JUGADOR 1";
+            ctx.strokeStyle="white";
+            ctx.fillStyle="black"; 
+            ctx.font="bold 20px Courier New"; 
+            ctx.strokeText(texto,200,450);
+            ctx.fillText(texto,200,450);    
+        }else{
+            texto="GANASTE JUGADOR 2";
+            ctx.strokeStyle="white";
+            ctx.fillStyle="black"; 
+            ctx.font="bold 20px Courier New"; 
+            ctx.strokeText(texto,200,450);
+            ctx.fillText(texto,200,450);
+        }
+        texto="Presiona P para regresar al menu";
+        ctx.strokeStyle="white";
+        ctx.fillStyle="black"; 
+        ctx.font="bold 20px Courier New"; 
+        ctx.strokeText(texto,200,500);
+        ctx.fillText(texto,200,500);
+        rMenu=true;
+        
+    } 
+}
     
 
 }
@@ -476,12 +585,31 @@ function drawScore(){
     ctx.fillText(texto,0,30) 
   }
   function drawLives(lives){
-    let live=new Image();
-    live.src=images.personaje;
+    let live1=new Image();
+    let live2=new Image();
+    live1.src=per.img.src;
+    live2.src=srcJugador2;
     let margin=950;
-    for(let i=0;i<lives;i++){
-        ctx.drawImage(live,margin,10,30,30);
-        margin-=70;
+    if(!Twoplayer){
+        for(let i=0;i<lives;i++){
+            ctx.drawImage(live1,margin,10,30,30);
+            margin-=70;
+        }   
+    }
+    else{
+        for(let i=0;i<lives/2;i++){
+            if(lives%2==0){
+                ctx.drawImage(live1,margin,10,30,30);
+                margin-=70;
+                per.img.src=srcJugador1;
+                
+                }
+            else{
+                ctx.drawImage(live2,margin,10,30,30);
+                margin-=70;
+                per.img.src=srcJugador2;
+            }
+        }
     }    
   }
 
@@ -521,6 +649,28 @@ function update(){
     
     
 }
+function aleatorioDis(){
+    srcJugador1=per.img.src;
+    let aleatorio=Math.floor(Math.random()*4);
+    while(aleatorio==per.id){
+        aleatorio=Math.floor(Math.random()*4);
+    }
+    switch(aleatorio){
+        case 0:
+            srcJugador2=images.personaje;
+        	break;
+        case 1:
+            srcJugador2=images.personaje1;
+        	break;
+        case 2:
+            srcJugador2=images.personaje2;
+        	break;
+        case 3:
+            srcJugador2=images.personaje3;
+        break;
+    }
+
+}
 
 
 function startGame() {
@@ -530,10 +680,34 @@ function startGame() {
   }
   window.onload=function(){
       document.getElementById("boton1").onclick=function(){
-          startGame();
-          let menuI= document.getElementById("Menu");
-          menuI.style.display="none"
+            startGame();
+            let menuI= document.getElementById("Menu");
+            menuI.style.display="none"
+            Twoplayer=false;
+            per.lives=3;
       }
+      document.getElementById("boton1").onmouseover=function(){
+        let audioOver=new Audio();
+        audioOver.src=sonidos.boton;
+        audioOver.loop=false;
+        audioOver.play();
+        }
+      document.getElementById("boton2").onclick=function(){
+        startGame();
+        let menuI= document.getElementById("Menu");
+        menuI.style.display="none"
+      }
+      document.getElementById("boton2").onmouseover=function(){
+        let audioOver=new Audio();
+        audioOver.src=sonidos.boton;
+        audioOver.loop=false;
+        audioOver.play();
+        per.lives=6;
+        puntP2=0;
+        puntP1=0;
+        aleatorioDis();
+        Twoplayer=true;
+        }
   }
   
   //startGame();
@@ -556,6 +730,22 @@ function startGame() {
         		break;
 
     }
+    aleatorio=Math.floor(Math.random()*4)
+        switch(aleatorio){
+        	case 0:
+        		per.img.src=images.personaje;
+        		break;
+        	case 1:
+        		per.img.src=images.personaje1;
+        		break;
+        	case 2:
+        		per.img.src=images.personaje2;
+        		break;
+        	case 3:
+        		per.img.src=images.personaje3;
+        		break;
+
+        }
      fondo.draw();
      frames=0;
      gameover=false;
