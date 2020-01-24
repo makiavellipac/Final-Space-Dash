@@ -469,7 +469,7 @@ function gameOver(){
         ctx.font="bold 20px Courier New"; 
         ctx.strokeText(texto,200,350);
         ctx.fillText(texto,200,350);
-        texto="Presiona ESC para regresar al menu";
+        texto="Presiona P para regresar al menu";
         ctx.strokeStyle="white";
         ctx.fillStyle="black"; 
         ctx.font="bold 20px Courier New"; 
@@ -555,7 +555,7 @@ else{
             ctx.strokeText(texto,200,450);
             ctx.fillText(texto,200,450);
         }
-        texto="Presiona ESC para regresar al menu";
+        texto="Presiona P para regresar al menu";
         ctx.strokeStyle="white";
         ctx.fillStyle="black"; 
         ctx.font="bold 20px Courier New"; 
@@ -803,9 +803,17 @@ function startGame() {
       case 82:
         restarGame();
         break;
-      case 27:
+      case 80:
         if(rMenu){
-        canvas.webkitRequestFullScreen()
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+              } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+              } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+              }
         regresarBoton();
         }  
     }
