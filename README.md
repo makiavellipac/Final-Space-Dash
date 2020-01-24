@@ -1,6 +1,6 @@
  # Mi Geometry Dash
 
-_Mi primer proyecto realizado en el Bootcamp De Desarrollo Web_
+_Mi primer proyecto realizado en el Bootcamp De Desarrollo Web_  **IronHack**
 
 ## Geometry Dash 🚀
 
