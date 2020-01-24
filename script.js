@@ -431,11 +431,14 @@ function gameOver(){
     audioOver.src=sonidos.gameover;
     audioOver.loop=false;
     audioOver.play();
-    
     if(!Twoplayer){
         per.puntuacion+=puntuacion;
     if(per.lives>1){
         let texto="PERDISTE 1 VIDA";
+
+        ctx.fillStyle="#EEEEEE";
+        ctx.fillRect(195,270,310,98);    
+
         ctx.strokeStyle="#FFCFDA";
         ctx.fillStyle="#FF4C77"; 
         ctx.font="bold 30px Courier New"; 
@@ -451,6 +454,10 @@ function gameOver(){
     }
     else{
         let texto="Fin del Juego";
+
+        ctx.fillStyle="#EEEEEE";
+        ctx.fillRect(195,270,420,138);
+
         ctx.strokeStyle="#FFCFDA";
         ctx.fillStyle="#FF4C77"; 
         ctx.font="bold 30px Courier New"; 
@@ -462,7 +469,7 @@ function gameOver(){
         ctx.font="bold 20px Courier New"; 
         ctx.strokeText(texto,200,350);
         ctx.fillText(texto,200,350);
-        texto="Presiona P para regresar al menu";
+        texto="Presiona ESC para regresar al menu";
         ctx.strokeStyle="white";
         ctx.fillStyle="black"; 
         ctx.font="bold 20px Courier New"; 
@@ -474,6 +481,10 @@ function gameOver(){
 else{
     if(per.lives>1 && per.lives%2==0){
         puntP1+=puntuacion;
+
+        ctx.fillStyle="#EEEEEE";
+        ctx.fillRect(195,270,460,98);
+
         let texto="PERDISTE 1 VIDA JUGADOR 1";
         ctx.strokeStyle="#FFCFDA";
         ctx.fillStyle="#FF4C77"; 
@@ -489,6 +500,10 @@ else{
         gameover=true;
     }else if(per.lives>1 && per.lives%2!=0){
         puntP2+=puntuacion;
+
+        ctx.fillStyle="#EEEEEE";
+        ctx.fillRect(195,270,460,98);
+
         let texto="PERDISTE 1 VIDA JUGADOR 2";
         ctx.strokeStyle="#FFCFDA";
         ctx.fillStyle="#FF4C77"; 
@@ -503,6 +518,10 @@ else{
         ctx.fillText(texto,200,350);
         gameover=true;
     }else{
+
+        ctx.fillStyle="#EEEEEE";
+        ctx.fillRect(195,270,475,240);
+
         let texto="Fin del Juego";
         ctx.strokeStyle="#FFCFDA";
         ctx.fillStyle="#FF4C77"; 
@@ -536,7 +555,7 @@ else{
             ctx.strokeText(texto,200,450);
             ctx.fillText(texto,200,450);
         }
-        texto="Presiona P para regresar al menu";
+        texto="Presiona ESC para regresar al menu";
         ctx.strokeStyle="white";
         ctx.fillStyle="black"; 
         ctx.font="bold 20px Courier New"; 
@@ -583,6 +602,10 @@ function drawScore(){
     ctx.font="bold 30px Courier New"; 
     ctx.strokeText(texto,0,30);
     ctx.fillText(texto,0,30) 
+  }
+  function drawBarra(){
+    ctx.fillStyle="#333333"
+    ctx.fillRect(0,0,canvas.width,42);
   }
   function drawLives(lives){
     let live1=new Image();
@@ -639,8 +662,10 @@ function update(){
     generarEnemigo();
     drawEnemigo();
     per.draw();
+    drawBarra();
     drawScore();
     drawLives(per.lives);
+    
     per.y+=per.vy;
     per.aplicarGravedad();
     per.mover();
@@ -680,6 +705,7 @@ function startGame() {
   }
   window.onload=function(){
       document.getElementById("boton1").onclick=function(){
+            canvas.webkitRequestFullScreen()
             startGame();
             let menuI= document.getElementById("Menu");
             menuI.style.display="none"
@@ -693,20 +719,22 @@ function startGame() {
         audioOver.play();
         }
       document.getElementById("boton2").onclick=function(){
+        canvas.webkitRequestFullScreen()
         startGame();
         let menuI= document.getElementById("Menu");
         menuI.style.display="none"
+        per.lives=6;
+        puntP2=0;
+        puntP1=0;
+        aleatorioDis();
+        Twoplayer=true;
       }
       document.getElementById("boton2").onmouseover=function(){
         let audioOver=new Audio();
         audioOver.src=sonidos.boton;
         audioOver.loop=false;
         audioOver.play();
-        per.lives=6;
-        puntP2=0;
-        puntP1=0;
-        aleatorioDis();
-        Twoplayer=true;
+        
         }
   }
   
@@ -775,8 +803,10 @@ function startGame() {
       case 82:
         restarGame();
         break;
-      case 80:
-        if(rMenu)
-        regresarBoton();  
+      case 27:
+        if(rMenu){
+        canvas.webkitRequestFullScreen()
+        regresarBoton();
+        }  
     }
   })
