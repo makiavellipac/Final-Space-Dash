@@ -1,4 +1,4 @@
- ##Mi Geometry Dash
+ # Mi Geometry Dash
 
 _Mi primer proyecto realizado en el Bootcamp De Desarrollo Web_
 
